@@ -278,6 +278,7 @@ int main(int argc, char* argv[]){
         read_all_measurements(argv[2]);
         read_all_subsystems(argv[3]);
 
+        printf("purity   entropy\n");
         for(int s = 0; s < (int)subsystems.size(); s++){
             int subsystem_size = (int)subsystems[s].size();
 
@@ -333,7 +334,7 @@ int main(int argc, char* argv[]){
                 predicted_entropy += ((double)1.0) / (renyi_number_of_outcomes[c] * (renyi_number_of_outcomes[c] - 1)) * (renyi_sum_of_binary_outcome[c] * renyi_sum_of_binary_outcome[c] - renyi_number_of_outcomes[c]) / (1LL << subsystem_size) * level_ttl[nonId] / level_cnt[nonId];
             }
 
-            printf("%f\n", -1.0 * log2(min(max(predicted_entropy, 1.0 / pow(2.0, subsystem_size)), 1.0 - 1e-9)));
+            printf("%f %f\n", predicted_entropy, -1.0 * log2(min(max(predicted_entropy, 1.0 / pow(2.0, subsystem_size)), 1.0 - 1e-9)));
         }
     }
     //
