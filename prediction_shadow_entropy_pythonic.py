@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Python version of prediction_shadow.cpp
-with more mapping on variable names and structures with original C++ implementation.
+Python version of prediction_shadow.cpp with more Pythonic code
+and less mapping with the C++ implementation on variable names and structures.
 
 Created by converting from Hsin-Yuan Huang's C++ implementation.
 For more details, see the accompanying paper:
@@ -9,11 +9,25 @@ For more details, see the accompanying paper:
 
 This version is converted by LLM agent,
 Github Copilot with the model Claude Sonnet 4.
+
 """
 
 import sys
 import math
 import numpy as np
+
+
+def count_trailing_zeros(n: int) -> int:
+    """
+    計算二進制表示中尾隨零的數量 (等價於 C++ 的 __builtin_ctzll)
+    """
+    if n == 0:
+        return 64  # 或其他適當的大數
+    count = 0
+    while (n & 1) == 0:
+        n >>= 1
+        count += 1
+    return count
 
 
 class QuantumEntropyPredictor:
@@ -108,18 +122,6 @@ class QuantumEntropyPredictor:
             self.measurement_pauli_basis.append(pauli_basis)
             self.measurement_binary_outcome.append(binary_outcome)
 
-    def count_trailing_zeros(self, n: int) -> int:
-        """
-        計算二進制表示中尾隨零的數量 (等價於 C++ 的 __builtin_ctzll)
-        """
-        if n == 0:
-            return 64  # 或其他適當的大數
-        count = 0
-        while (n & 1) == 0:
-            n >>= 1
-            count += 1
-        return count
-
     def predict_entropy(self):
         """
         預測量子系統的熵
@@ -144,7 +146,7 @@ class QuantumEntropyPredictor:
 
                 # 使用格雷碼迭代所有 2^n 種可能的結果
                 for b in range(1, 1 << subsystem_size):
-                    change_i = self.count_trailing_zeros(b)
+                    change_i = count_trailing_zeros(b)
                     index_in_original_system = self.subsystems[s][change_i]
 
                     cumulative_outcome *= self.measurement_binary_outcome[t][
@@ -185,14 +187,16 @@ class QuantumEntropyPredictor:
 
                 if level_cnt[non_id] > 0:
                     # 計算熵項
-                    sum_squared = renyi_sum_of_binary_outcome[c] ** 2
                     num_outcomes = renyi_number_of_outcomes[c]
-                    numerator = sum_squared - num_outcomes
-                    denominator = num_outcomes * (num_outcomes - 1)
                     scale_factor = (
                         level_ttl[non_id] / level_cnt[non_id] / (1 << subsystem_size)
                     )
-                    term = numerator / denominator * scale_factor
+                    term = (
+                        (renyi_sum_of_binary_outcome[c] ** 2 - num_outcomes)
+                        / num_outcomes
+                        * (num_outcomes - 1)
+                        * scale_factor
+                    )
                     predicted_entropy += term
 
             # 計算最終熵值
