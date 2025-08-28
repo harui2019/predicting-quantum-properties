@@ -124,7 +124,14 @@ class QuantumEntropyPredictor:
         """
         預測量子系統的熵
         """
-        print("purity   entropy")
+        print(
+            "  ".join(
+                map(
+                    lambda x: x.ljust(16),
+                    ["predicted_purity", "clamped_purity", "entropy"],
+                )
+            )
+        )
 
         for s, _ in enumerate(self.subsystems):
             subsystem_size = len(self.subsystems[s])
@@ -172,8 +179,7 @@ class QuantumEntropyPredictor:
                     level_cnt[non_id] += 1
                 level_ttl[non_id] += 1
 
-            # 計算預測熵
-            predicted_entropy = 0.0
+            predicted_purity = 0.0
             for c in range(max_encoding):
                 if renyi_number_of_outcomes[c] <= 1:
                     continue
@@ -193,15 +199,22 @@ class QuantumEntropyPredictor:
                         level_ttl[non_id] / level_cnt[non_id] / (1 << subsystem_size)
                     )
                     term = numerator / denominator * scale_factor
-                    predicted_entropy += term
+                    predicted_purity += term
 
             # 計算最終熵值
             min_purity = 1.0 / (2.0**subsystem_size)
             max_purity = 1.0 - 1e-9
-            clamped_purity = max(min(predicted_entropy, max_purity), min_purity)
+            clamped_purity = max(min(predicted_purity, max_purity), min_purity)
             entropy = -math.log2(clamped_purity)
 
-            print(f"{predicted_entropy:.6f} {entropy:.6f}")
+            print(
+                "  ".join(
+                    map(
+                        lambda x: f"{x:.10f}".ljust(16),
+                        [predicted_purity, clamped_purity, entropy],
+                    )
+                )
+            )
 
 
 def main():

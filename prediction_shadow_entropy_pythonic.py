@@ -436,9 +436,9 @@ class QuantumEntropyPredictor:
         預測量子系統的熵
         """
         print(
-            " ".join(
+            "  ".join(
                 map(
-                    lambda x: f"{x}".rjust(16),
+                    lambda x: x.ljust(16),
                     ["predicted_purity", "clamped_purity", "entropy"],
                 )
             )
@@ -451,9 +451,9 @@ class QuantumEntropyPredictor:
                 self.measurement_spin_outcome,
             )
             print(
-                " ".join(
+                "  ".join(
                     map(
-                        lambda x: f"{x:f}".rjust(16),
+                        lambda x: f"{x:.10f}".ljust(16),
                         [predicted_purity, clamped_purity, entropy],
                     )
                 )
